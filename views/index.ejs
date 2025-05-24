@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>みんなの掲示板</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>🌸 みんなの掲示板 🌸</h1>
+  <form action="/comment" method="POST" enctype="multipart/form-data">
+    <input type="text" name="name" placeholder="名前" required>
+    <textarea name="content" placeholder="コメント内容" required></textarea>
+    <input type="file" name="image">
+    <input type="hidden" name="parentId" id="parentId">
+    <button type="submit">投稿</button>
+  </form>
+
+  <div class="comments">
+    <% function renderComments(parentId) { %>
+      <% comments.filter(c => c.parentId === parentId).forEach(c => { %>
+        <div class="comment">
+          <strong><%= c.name %></strong>（<%= new Date(c.time).toLocaleString('ja-JP') %>）<br>
+          <%= c.content %><br>
+          <% if (c.image) { %>
+            <img src="<%= c.image %>" width="150"><br>
+          <% } %>
+          <button onclick="reply('<%= c.id %>')">返信</button>
+          <div class="replies">
+            <% renderComments(c.id); %>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+    <% renderComments(null); %>
+  </div>
+
+  <script>
+    function reply(id) {
+      document.getElementById('parentId').value = id;
+      window.scrollTo(0, 0);
+    }
+  </script>
+</body>
+</html>
